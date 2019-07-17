@@ -3,23 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 
 class MicropostsController extends Controller
 {
     public function index()
     {
-        $data = [];
-        if (\Auth::check()) {
-            $user = \Auth::user();
-            $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
-            
-            $data = [
-                'user' => $user,
-                'microposts' => $microposts,
-            ];
-        }
-        
-        return view('welcome', $data);
+        $users = User::orderBy('id', 'desc')->paginate(10);
+
+        return view('users.index', [
+            'users' => $users,
+        ]);
     }
     
     public function store(Request $request)
@@ -27,7 +21,7 @@ class MicropostsController extends Controller
         $this->validate($request, [
             'content' => 'required|max:191',
         ]);
-
+        
         $request->user()->microposts()->create([
             'content' => $request->content,
         ]);
@@ -45,4 +39,6 @@ class MicropostsController extends Controller
 
         return back();
     }
+    
+    
 }
